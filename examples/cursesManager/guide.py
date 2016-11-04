@@ -5,6 +5,11 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..', 'managers'))
 from cursesManager import CursesManager
 
+def diagnose(stdscr):
+    # Check terminal properties
+    CursesManager.diagnose()
+    return None
+
 # Create slow text
 def step1(stdscr):
     message = "Welcome to this guide. Press any key"
@@ -19,20 +24,40 @@ def step1(stdscr):
 
 # Create text at position
 def step2(stdscr):
+    title = "This is a title"
     message = "This is a fast message in x = 5 and y = 5"
     message2 = "\nThis is a fast message with CRLF at the beggining"
     message3 = "You can manually put the cursor in position 10, 11 and print a message"
+    message4 = "You can insert this message"
+    message5 = "And you can delete it!"
+    message6 = "And delete each ch of this message"
     x = 5
     y = 5
 
     cm = CursesManager()
     cm.set_current_window(stdscr)
     cm.clear()
+    cm.print_message_centered(title, 2)
     cm.print_message_at(message, x, y)
     cm.print_message(message2)
     cm.set_cursor(10, 11)
     cm.print_message(message3)
     cm.waitforkey()
+    cm.insertln(10)
+    cm.print_message(message4)
+    cm.waitforkey()
+    cm.insertln(10)
+    cm.print_message(message5)
+    cm.insertln(11)
+    cm.waitforkey()
+    #cm.print_message_at(message6, 7, 7)
+    #cm.waitforkey()
+    #cm.delch(7, 6)
+    #cm.waitforkey()
+    #cm.delch(8, 7)
+    #cm.waitforkey()
+    #cm.delch(9, 7)
+    #cm.waitforkey()
     cm.cleanup()
     return None
 
@@ -105,12 +130,12 @@ def step4(stdscr):
     return None
 
 def step5(stdscr):
-    message = "You can change background\nAnd write with different colors"
-    message2 = "\nChange it!"
-    message3 = "\nAnd change again!!"
-    message4 = "\nAnd create a border"
-    message5 = "\nChange it!"
-    message6 = "\nAnd change again!!"
+    message = " You can change background\n And write with different colors"
+    message2 = "\n Change it!"
+    message3 = "\n And change again!!"
+    message4 = "\n And create a border"
+    message5 = "\n Change it!"
+    message6 = "\n And change again!!"
 
     cm = CursesManager()
     cm.set_current_window(stdscr)
@@ -135,7 +160,6 @@ def step5(stdscr):
     cm.print_message(message6)
     cm.print_border(2)
     cm.waitforkey()
-    cm.cleanup()
     return None
 
 # Selective clear
@@ -160,7 +184,53 @@ def step6(stdscr):
     cm.cleanup()
     return None
 
+# Cursor usage
 def step7(stdscr):
+    message = "Cursor off"
+    message2 = "Cursor on"
+    message3 = "Cursor fast"
+
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+    cm.print_message_at(message, 1, 1)
+    cm.set_cursor_mode(0)
+    cm.rwait(1)
+    cm.waitforkey()
+    cm.print_message_at(message2, 1, 2)
+    cm.set_cursor_mode(1)
+    cm.rwait(1)
+    cm.waitforkey()
+    cm.print_message_at(message3, 1, 3)
+    cm.set_cursor_mode(2)
+    cm.rwait(1)
+    cm.waitforkey()
+    cm.cleanup()
+    return None
+
+# Create a book
+def step8(stdscr):
+    title = "My first book"
+    pages = []
+    author = "vgonisanz"
+    page1 = "This is my first page."
+    page2 = "This is my second page."
+    page3 = "This is my third page."
+    page4 = "This is my last page."
+    pages.append(page1)
+    pages.append(page2)
+    pages.append(page3)
+    pages.append(page4)
+
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+    cm.print_book(title, pages, author)
+    cm.waitforkey()
+    cm.cleanup()
+    return None
+
+def step9(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
     cm.clear()
@@ -179,22 +249,25 @@ def template(stdscr):
     return None
 
 def tryit():
+    # Configuration
     curses.echo()
     curses.curs_set(1)
     curses.setsyx(10, 10)
     curses.doupdate()
+    # Click put, clicky
 
 if __name__ == "__main__":
+    #wrapper(diagnose)
     #wrapper(step1)
     #wrapper(step2)
     #wrapper(step3)
     #wrapper(step4)
-    wrapper(step5)
+    #wrapper(step5)
     #wrapper(step6)
     #wrapper(step7)
-    #wrapper(step5)
-    #wrapper(step5)
-    #wrapper(step5)
+    #wrapper(step8)
+    #wrapper(step9)
+    wrapper(step2)
     print("Thanks for using curses guide")
 
 # TODO Check create pads

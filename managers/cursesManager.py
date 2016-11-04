@@ -1,5 +1,9 @@
+#from __future__ import unicode_literals # Unicode python2.7 test
 import curses
 from curses import wrapper
+
+import locale
+
 
 """
 This python 3 class will manager a curses windows for you.
@@ -19,6 +23,9 @@ class CursesManager(object):
     @classmethod
     def __init__(self, echo=False):
         print("Initializing curses Manager")
+        # Set UTF-8
+        locale.setlocale(locale.LC_ALL, '')
+        code = locale.getpreferredencoding()
         return
 
     """
@@ -48,15 +55,28 @@ class CursesManager(object):
         print("Init basic stuffs")
         curses.start_color()
         return None
+
     """
-    Print info.
+    Diagnose terminal and print info. Static, you can use githout instance.
+    Give all info about curses and you terminal. Use it at the beginning to test.
 
     :return: returns nothing
     """
-    @classmethod
-    def print_info(self):
-        print("Lines: %s (y size) " % curses.LINES)
-        print("Cols: %s (x size)" % curses.COLS)
+    @staticmethod
+    def diagnose():
+        window = curses.initscr()
+        window.addstr("\n  Userful info:")
+        window.addstr("\n  Terminal: %s" % curses.longname())
+        window.addstr("\n  Can use color: %s" % curses.has_colors())
+        if curses.has_colors():
+            window.addstr("\n  Can change colors: %s" % curses.can_change_color())
+            window.addstr("\n  Terminal has %s colors" % curses.COLORS)
+            window.addstr("\n  Terminal has %s pairs of colors" % curses.COLOR_PAIRS)
+        window.addstr("\n  Number of lines: %s (y size) " % curses.LINES)
+        window.addstr("\n  Number of cols: %s (x size)" % curses.COLS)
+        window.border()
+        window.getkey()
+        curses.endwin()
         return None
 
     """
@@ -116,7 +136,7 @@ class CursesManager(object):
     """
     Get a key.
 
-    :return: returns string with key
+    :return: returns None
     """
     @classmethod
     def getkey(self):
@@ -138,20 +158,20 @@ class CursesManager(object):
     """
     Wait for key.
 
-    :return: returns string with key
+    :return: returns None
     """
     @classmethod
     def waitforkey(self):
         if self._current_window != None:
             self.rwait(1)
-            self.print_message("\nPress any key to continue.")
+            self.print_message("\n Press any key to continue.")
             return self._current_window.getkey()
         return None
 
     """
     Refresh screen and wait time in milliseconds.
 
-    :return: returns string with key
+    :return: returns None
     """
     @classmethod
     def rwait(self, ms = 1):
@@ -163,7 +183,7 @@ class CursesManager(object):
     """
     Set cursor at position.
 
-    :return: returns string with key
+    :return: returns None
     """
     @classmethod
     def set_cursor(self, x0, y0):
@@ -172,9 +192,20 @@ class CursesManager(object):
         return None
 
     """
+    Set cursor mode.
+
+    :return: returns None
+    """
+    @classmethod
+    def set_cursor_mode(self, mode):
+        if mode >= 0 and mode < 3:
+            curses.curs_set(mode)
+        return None
+
+    """
     Clear line from (x, y) position.
 
-    :return: returns string with key
+    :return: returns None
     """
     @classmethod
     def clrtoeol(self, x0, y0):
@@ -186,13 +217,49 @@ class CursesManager(object):
     """
     Clear terminal from (x, y) position.
 
-    :return: returns string with key
+    :return: returns None
     """
     @classmethod
     def clrtobot(self, x0, y0):
         if self._current_window != None:
             self._current_window.move(y0, x0)
             self._current_window.clrtobot()
+        return None
+
+    """
+    Request insert next line, moving down data
+
+    :return: returns None
+    """
+    @classmethod
+    def insertln(self, y0):
+        if self._current_window != None:
+            self._current_window.move(y0, 0)
+            self._current_window.insertln()
+        return None
+
+    """
+    Request delete line at line y
+
+    :return: returns None
+    """
+    @classmethod
+    def deleteln(self, y0 = -1):
+        if self._current_window != None:
+            if y0 >= 0:
+                self._current_window.move(y0, 0)
+            self._current_window.deleteln()
+        return None
+
+    """
+    Request delete character at position x0, y0
+
+    :return: returns None
+    """
+    @classmethod
+    def delch(self, x0, y0):
+        if self._current_window != None:
+            self._current_window.delch(y0, x0)
         return None
 
     """
@@ -248,7 +315,7 @@ class CursesManager(object):
         if self._current_window != None:
             y, x = self._current_window.getmaxyx()
             lenght = len( pattern )
-            times = (x * (y - 1) / lenght) - 1 # Without -1 can fail with 5 elements
+            times = (int)(x * (y-1) / lenght) - 1
             self._current_window.move(0, 0)
             for i in range(0, times):
                 self.print_message(pattern)
@@ -265,6 +332,30 @@ class CursesManager(object):
         if self._current_window != None:
             # Set attributes
             self._current_window.attrset(attributes)
+            # Print
+            self._current_window.addstr(message)
+            # Restore attributes
+            self._current_window.attroff(attributes)
+        return None
+
+    """
+    Print a message string at y position centered.
+
+    :return: returns nothing
+    """
+    @classmethod
+    def print_message_centered(self, message, y0, attributes = curses.A_NORMAL):
+        if self._current_window != None:
+            y, x = self._current_window.getmaxyx()
+            lenght = len( message )
+            indent = x - lenght
+            indent = (int)(indent / 2)
+            y0_int = (int)(y0)
+
+            # Set attributes
+            self._current_window.attrset(attributes)
+            # Set cursor
+            self.set_cursor(indent, y0_int)
             # Print
             self._current_window.addstr(message)
             # Restore attributes
@@ -325,4 +416,35 @@ class CursesManager(object):
                 curses.napms(inter_delay)
             # Restore attributes
             self._current_window.attroff(attributes)
+        return None
+
+    """
+    Print book like.
+
+    :return: returns nothing
+    """
+    @classmethod
+    def print_book(self, title, pages, author = ""):
+        if self._current_window != None:
+            y, x = self._current_window.getmaxyx()
+            mid_y = (int)(y/2)
+            q_y = (int)(y*3/4)
+            q_x = (int)(x*3/4)
+            # Print title, author, and wait
+            self.clear()
+            self.print_message_centered(title, mid_y)
+            self.print_message_at(author, q_x, q_y)
+            self.print_border()
+            self.waitforkey()
+            # Read each page
+            for page in pages:
+                self.clear()
+                self.print_message_at(page, 1,1)
+                self.print_border()
+                self.waitforkey()
+            # End
+            self.clear()
+            self.print_message_centered("The end", y/2)
+            self.print_border()
+            self.waitforkey()
         return None
