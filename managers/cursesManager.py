@@ -161,9 +161,11 @@ class CursesManager(object):
     :return: returns None
     """
     @classmethod
-    def waitforkey(self):
+    def waitforkey(self, x0 = -1, y0 = -1):
         if self._current_window != None:
             self.rwait(1)
+            if x0 > -1 and y0 > -1:
+                self.set_cursor(x0, y0)
             self.print_message("\n Press any key to continue.")
             return self._current_window.getkey()
         return None
@@ -224,6 +226,16 @@ class CursesManager(object):
         if self._current_window != None:
             self._current_window.move(y0, x0)
             self._current_window.clrtobot()
+        return None
+
+    """
+    Clear terminal from (x, y) position.
+
+    :return: returns None
+    """
+    @classmethod
+    def flash(self):
+        curses.flash()
         return None
 
     """
@@ -313,9 +325,9 @@ class CursesManager(object):
     @classmethod
     def fill_with_pattern(self, pattern):
         if self._current_window != None:
-            y, x = self._current_window.getmaxyx()
+            y_max, x_max = self._current_window.getmaxyx()
             lenght = len( pattern )
-            times = (int)(x * (y-1) / lenght) - 1
+            times = (int)(x_max * (y_max  -1) / lenght) - 1
             self._current_window.move(0, 0)
             for i in range(0, times):
                 self.print_message(pattern)
@@ -346,9 +358,9 @@ class CursesManager(object):
     @classmethod
     def print_message_center(self, message, y0, attributes = curses.A_NORMAL):
         if self._current_window != None:
-            y, x = self._current_window.getmaxyx()
+            y_max, x_max = self._current_window.getmaxyx()
             lenght = len( message )
-            indent = x - lenght
+            indent = x_max - lenght
             indent = (int)(indent / 2)
             y0_int = (int)(y0)
 
@@ -426,10 +438,10 @@ class CursesManager(object):
     @classmethod
     def print_book(self, title, pages, author = ""):
         if self._current_window != None:
-            y, x = self._current_window.getmaxyx()
-            mid_y = (int)(y/2)
-            q_y = (int)(y*3/4)
-            q_x = (int)(x*3/4)
+            y_max, x_max = self._current_window.getmaxyx()
+            mid_y = (int)(y_max / 2)
+            q_y = (int)(y_max * 3/4)
+            q_x = (int)(x_max * 3/4)
             # Print title, author, and wait
             self.clear()
             self.print_message_center(title, mid_y)
@@ -452,7 +464,7 @@ class CursesManager(object):
     """
     Print menu like.
 
-    :return: returns -1 if quit with q or ESC, option id from [0, N-1] if ENTER 
+    :return: returns -1 if quit with q or ESC, option id from [0, N-1] if ENTER
     """
     @classmethod
     def print_menu(self, title, options, instructions = ""):
@@ -498,3 +510,46 @@ class CursesManager(object):
             counter = counter + 1
         self.print_message_at(instructions, offset_x, counter + offset_y + title_padding + instruction_padding + 1)
         return option_selected
+
+    """
+    print 4 windows in a box.
+
+    :return: returns win0, win1, win2, win3
+    """
+    @classmethod
+    def print_4windows(self):
+        y_max, x_max = self._current_window.getmaxyx()
+        y_2 = y_max / 2
+        x_2 = x_max / 2
+        win0 = curses.newwin(y_2, x_2, 0, 0)
+        win1 = curses.newwin(y_2, x_2, 0, x_2)
+        win2 = curses.newwin(y_2, x_2, y_2, 0)
+        win3 = curses.newwin(y_2, x_2, y_2, x_2)
+        self.rwait(1)
+        win0.addstr(1, 1, "Window 0")
+        win1.addstr(1, 1, "Window 1")
+        win2.addstr(1, 1, "Window 2")
+        win3.addstr(1, 1, "Window 3")
+        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLUE);
+        win0.bkgd(curses.color_pair(2))
+        win0.border()
+        curses.init_pair(3, curses.COLOR_BLUE, curses.COLOR_WHITE);
+        win1.bkgd(curses.color_pair(3))
+        win1.border()
+        curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_WHITE);
+        win2.bkgd(curses.color_pair(4))
+        win2.border()
+        curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_GREEN);
+        win3.bkgd(curses.color_pair(5))
+        win3.border()
+        return win0, win1, win2, win3
+
+    """
+    Template.
+
+    :return: returns nothing
+    """
+    @classmethod
+    def template(self):
+        #
+        return None

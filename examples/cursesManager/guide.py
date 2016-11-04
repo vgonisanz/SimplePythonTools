@@ -250,6 +250,20 @@ def step9(stdscr):
     cm.cleanup()
     return None
 
+def step10(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+    win0, win1, win2, win3 = cm.print_4windows()
+    win0.refresh()
+    win1.refresh()
+    win2.refresh()
+    win3.refresh()
+    cm.set_current_window(win0)
+    cm.waitforkey(0, 5)
+    cm.cleanup()
+    return None
+
 def template(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
@@ -265,7 +279,8 @@ def tryit():
     curses.curs_set(1)
     curses.setsyx(10, 10)
     curses.doupdate()
-    # Click put, clicky
+    # Click put, clicky, mouse diagnose
+    # paint sith matrix or lists
 
 if __name__ == "__main__":
     #wrapper(diagnose)
@@ -277,7 +292,8 @@ if __name__ == "__main__":
     #wrapper(step6)
     #wrapper(step7)
     #wrapper(step8)
-    wrapper(step9)
+    #wrapper(step9)
+    wrapper(step10)
     #wrapper(step2)
     print("Thanks for using curses guide")
 
