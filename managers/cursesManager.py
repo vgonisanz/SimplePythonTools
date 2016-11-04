@@ -3,7 +3,7 @@ import curses
 from curses import wrapper
 
 import locale
-
+import types
 
 """
 This python 3 class will manager a curses windows for you.
@@ -344,7 +344,7 @@ class CursesManager(object):
     :return: returns nothing
     """
     @classmethod
-    def print_message_centered(self, message, y0, attributes = curses.A_NORMAL):
+    def print_message_center(self, message, y0, attributes = curses.A_NORMAL):
         if self._current_window != None:
             y, x = self._current_window.getmaxyx()
             lenght = len( message )
@@ -432,7 +432,7 @@ class CursesManager(object):
             q_x = (int)(x*3/4)
             # Print title, author, and wait
             self.clear()
-            self.print_message_centered(title, mid_y)
+            self.print_message_center(title, mid_y)
             self.print_message_at(author, q_x, q_y)
             self.print_border()
             self.waitforkey()
@@ -444,7 +444,57 @@ class CursesManager(object):
                 self.waitforkey()
             # End
             self.clear()
-            self.print_message_centered("The end", y/2)
+            self.print_message_center("The end", y/2)
             self.print_border()
             self.waitforkey()
         return None
+
+    """
+    Print menu like.
+
+    :return: returns -1 if quit with q or ESC, option id from [0, N-1] if ENTER 
+    """
+    @classmethod
+    def print_menu(self, title, options, instructions = ""):
+        if len(options) <= 0:
+            return None
+        option_selected = 0
+        quit_menu = False
+        if self._current_window != None:
+            self.__draw_menu(title, options, option_selected, instructions)
+            while not quit_menu:
+                event = self.getch()
+                if event == curses.KEY_UP:
+                    option_selected = option_selected - 1
+                if event == curses.KEY_DOWN:
+                    option_selected = option_selected + 1
+                if event == curses.KEY_ENTER or event == 10 or event == 13:
+                    quit_menu = True
+                option_selected = self.__draw_menu(title, options, option_selected, instructions)
+                if event == ord('q') or event == 28:
+                    quit_menu = True
+                    option_selected = -1
+        return option_selected
+
+    """
+    Draw menu options.
+
+    :return: returns option selected
+    """
+    @classmethod
+    def __draw_menu(self, title, options, option_selected, instructions, offset_x = 15, offset_y = 0, title_padding = 1, instruction_padding = 1):
+        max_options = len(options)
+        if option_selected < 0:
+            option_selected = 0
+        if option_selected >= max_options:
+            option_selected = max_options - 1
+        counter = 0
+        self.print_message_at(title, offset_x, offset_y, curses.A_UNDERLINE)
+        for option in options:
+            if option_selected == counter:
+                self.print_message_at(option, offset_x, counter + offset_y + title_padding + 1, curses.A_REVERSE)
+            else:
+                self.print_message_at(option, offset_x, counter + offset_y + title_padding + 1)
+            counter = counter + 1
+        self.print_message_at(instructions, offset_x, counter + offset_y + title_padding + instruction_padding + 1)
+        return option_selected

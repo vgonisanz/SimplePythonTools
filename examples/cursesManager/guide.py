@@ -37,7 +37,7 @@ def step2(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
     cm.clear()
-    cm.print_message_centered(title, 2)
+    cm.print_message_center(title, 2)
     cm.print_message_at(message, x, y)
     cm.print_message(message2)
     cm.set_cursor(10, 11)
@@ -231,10 +231,21 @@ def step8(stdscr):
     return None
 
 def step9(stdscr):
+    title = "My first menu"
+    options = []
+    option1 = "Option 1"
+    option2 = "Option 2"
+    option3 = "Option 3"
+    options.append(option1)
+    options.append(option2)
+    options.append(option3)
+    instructions = "Use arrow keys to move, ENTER to select, q or ESC to abort."
+
     cm = CursesManager()
     cm.set_current_window(stdscr)
     cm.clear()
-
+    option_choose = cm.print_menu(title, options, instructions)
+    cm.print_message_at("Option chosen: %s" % option_choose, 1, 6)
     cm.waitforkey()
     cm.cleanup()
     return None
@@ -266,8 +277,8 @@ if __name__ == "__main__":
     #wrapper(step6)
     #wrapper(step7)
     #wrapper(step8)
-    #wrapper(step9)
-    wrapper(step2)
+    wrapper(step9)
+    #wrapper(step2)
     print("Thanks for using curses guide")
 
 # TODO Check create pads
