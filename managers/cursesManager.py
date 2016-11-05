@@ -322,6 +322,57 @@ class CursesManager(object):
         return None
 
     """
+    Get cursor position.
+
+    :return: returns x and y, or -1 if not window
+    """
+    @classmethod
+    def get_cursor(self):
+        y = -1
+        x = -1
+        if self._current_window != None:
+            y, x = self._current_window.getyx()
+        return x, y
+
+    """
+    Get max size position.
+
+    :return: returns max valid x and y, or -1 if not window
+    """
+    @classmethod
+    def get_max_cursor(self):
+        y = -1
+        x = -1
+        if self._current_window != None:
+            y, x = self._current_window.getmaxyx()
+            y = y - 2
+            x = x - 1
+        return x, y
+
+    """
+    Get a valid coordinates. 0 is value < min, and max if  value > max
+
+    :return: returns valid x and y, or -1 if not window
+    """
+    @classmethod
+    def get_valid_cursor(self, x0, y0):
+        y = -1
+        x = -1
+        if self._current_window != None:
+            y, x = self._current_window.getmaxyx()
+            y = y - 2
+            x = x - 1
+            if x0 < 0:
+                x = 0
+            elif x0 <= x:    # Valid value inside
+                x = x0
+            if y0 < 0:
+                y = 0
+            elif y0 <= y:
+                y = y0
+        return x, y
+
+    """
     Print background with color.
 
     :return: returns nothing
@@ -398,6 +449,25 @@ class CursesManager(object):
         return None
 
     """
+    Print a character string at current cursor position.
+
+    :return: returns nothing
+    """
+    @classmethod
+    def print_ch_at(self, ch, x0 = -1, y0 = -1, attributes = curses.A_NORMAL):
+        if self._current_window != None:
+            # Set attributes
+            self._current_window.attrset(attributes)
+            if x0 > -1 and y0 > -1:
+                # Set cursor position
+                self._current_window.move(y0, x0)
+            # Print
+            self._current_window.addch(ch)
+            # Restore attributes
+            self._current_window.attroff(attributes)
+        return None
+
+    """
     Print a message string at current cursor position.
 
     :return: returns nothing
@@ -461,12 +531,13 @@ class CursesManager(object):
     :return: returns nothing
     """
     @classmethod
-    def print_message_at(self, message, x0 = 0, y0 = 0, attributes = curses.A_NORMAL):
+    def print_message_at(self, message, x0 = -1, y0 = -1, attributes = curses.A_NORMAL):
         if self._current_window != None:
             # Set attributes
             self._current_window.attrset(attributes)
-            # Set cursor position
-            self._current_window.move(y0, x0)
+            if x0 > -1 and y0 > -1:
+                # Set cursor position
+                self._current_window.move(y0, x0)
             # Print
             self._current_window.addstr(message)
             # Restore attributes

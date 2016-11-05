@@ -284,6 +284,7 @@ def step10(stdscr):
     cm.cleanup()
     return None
 
+# Create question and get answer
 def step11(stdscr):
     question = "What is your name?"
 
@@ -292,6 +293,51 @@ def step11(stdscr):
     cm.clear()
     answer = cm.print_question(question, True, 1, 1, 1, 2)
     cm.print_message(" Your answer was: " + answer)
+    cm.waitforkey()
+    cm.cleanup()
+    return None
+
+# Playing with cursor
+def step12(stdscr):
+    ch = "a"
+    message = "Lets try use cursor"
+    message_cursor = "Cursor at x=%d and y=%d"
+    message_max = "win is width = %s and height = %s"
+
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+    cm.print_message_center(message, 0)
+    x_max, y_max = cm.get_max_cursor()
+    # Invalid value
+    x = -1
+    y = -1
+    # Corrected!
+    x, y = cm.get_valid_cursor(x, y)
+    cm.print_ch_at(ch, x, y, curses.A_REVERSE)
+    # Where is? (1,0) after write a character
+    x_cur, y_cur = cm.get_cursor()
+    cm.print_message_at(message_cursor % (x_cur, y_cur), 1, 1)
+    cm.waitforkey()
+    # Invalid value
+    x = 20000
+    y = 20000
+    # Corrected!
+    x, y = cm.get_valid_cursor(x, y)
+    cm.print_ch_at(ch, x, y, curses.A_REVERSE)
+    # Where is? after write a character
+    x_cur, y_cur = cm.get_cursor()
+    cm.print_message_at(message_cursor % (x_cur, y_cur), 1, 2)
+    cm.waitforkey()
+    # Valid value
+    x = (int)(x_max/2)
+    y = (int)(y_max/2)
+    # Corrected!
+    x, y = cm.get_valid_cursor(x, y)
+    cm.print_ch_at(ch, x, y, curses.A_REVERSE)
+    # Where is? in the middle after write a character
+    x_cur, y_cur = cm.get_cursor()
+    cm.print_message_at(message_cursor % (x_cur, y_cur), 1, 3)
     cm.waitforkey()
     cm.cleanup()
     return None
@@ -327,7 +373,8 @@ if __name__ == "__main__":
     #wrapper(step8)
     #wrapper(step9)
     #wrapper(step10)
-    wrapper(step11)
+    #wrapper(step11)
+    wrapper(step12)
     print("Thanks for using curses guide")
 
 # TODO Check create pads
