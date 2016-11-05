@@ -205,6 +205,18 @@ class CursesManager(object):
         return None
 
     """
+    Clear line y.
+
+    :return: returns None
+    """
+    @classmethod
+    def clearln(self, y0):
+        if self._current_window != None:
+            self._current_window.move(y0, 0)
+            self._current_window.clrtoeol()
+        return None
+
+    """
     Clear line from (x, y) position.
 
     :return: returns None
@@ -332,6 +344,22 @@ class CursesManager(object):
             for i in range(0, times):
                 self.print_message(pattern)
             self.rwait(1)
+        return None
+
+    """
+    Print a character string at current cursor position.
+
+    :return: returns nothing
+    """
+    @classmethod
+    def print_ch(self, ch, attributes = curses.A_NORMAL):
+        if self._current_window != None:
+            # Set attributes
+            self._current_window.attrset(attributes)
+            # Print
+            self._current_window.addch(ch)
+            # Restore attributes
+            self._current_window.attroff(attributes)
         return None
 
     """

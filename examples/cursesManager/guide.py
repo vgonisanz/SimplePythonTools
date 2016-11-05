@@ -31,6 +31,8 @@ def step2(stdscr):
     message4 = "You can insert this message"
     message5 = "And you can delete it!"
     message6 = "And delete each ch of this message"
+    message7 = "You can fill all lines with a for bucle, this is the number: %d"
+    message8 = "You can fill all spaces in a line with a for bucle"
     x = 5
     y = 5
 
@@ -49,6 +51,19 @@ def step2(stdscr):
     cm.insertln(10)
     cm.print_message(message5)
     cm.insertln(11)
+    cm.waitforkey()
+    # Manually use curses:
+    y_max, x_max = stdscr.getmaxyx()
+    for i in range(0, y_max - 1):
+        cm.print_message_at(message7 % i, 1, i)
+    cm.waitforkey()
+    cm.clearln(0)
+    cm.clearln(1)
+    cm.clearln(2)
+    cm.print_message_at(message8, 0, 0)
+    cm.set_cursor(0, 1)
+    for i in range(0, x_max):
+        cm.print_ch("+")
     cm.waitforkey()
     #cm.print_message_at(message6, 7, 7)
     #cm.waitforkey()
@@ -250,6 +265,7 @@ def step9(stdscr):
     cm.cleanup()
     return None
 
+# Window demo
 def step10(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
@@ -261,6 +277,19 @@ def step10(stdscr):
     win3.refresh()
     cm.set_current_window(win0)
     cm.waitforkey(0, 5)
+    y_max, x_max = win3.getmaxyx()
+    win3.addch(y_max - 2, x_max - 2, "f")
+    win3.refresh()
+    cm.waitforkey(0, 5)
+    cm.cleanup()
+    return None
+
+def step11(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+
+    cm.waitforkey()
     cm.cleanup()
     return None
 
@@ -281,6 +310,7 @@ def tryit():
     curses.doupdate()
     # Click put, clicky, mouse diagnose
     # paint sith matrix or lists
+    # Secure print no out of bounds?
 
 if __name__ == "__main__":
     #wrapper(diagnose)
@@ -293,8 +323,8 @@ if __name__ == "__main__":
     #wrapper(step7)
     #wrapper(step8)
     #wrapper(step9)
-    wrapper(step10)
-    #wrapper(step2)
+    #wrapper(step10)
+    wrapper(step11)
     print("Thanks for using curses guide")
 
 # TODO Check create pads
