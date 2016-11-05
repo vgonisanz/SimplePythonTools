@@ -147,12 +147,23 @@ class CursesManager(object):
     """
     Get a char.
 
-    :return: returns character with key
+    :return: returns character
     """
     @classmethod
     def getch(self):
         if self._current_window != None:
             return self._current_window.getch()
+        return None
+
+    """
+    Get a string.
+
+    :return: returns string entered
+    """
+    @classmethod
+    def getstr(self):
+        if self._current_window != None:
+            return self._current_window.getstr()
         return None
 
     """
@@ -238,6 +249,30 @@ class CursesManager(object):
         if self._current_window != None:
             self._current_window.move(y0, x0)
             self._current_window.clrtobot()
+        return None
+
+    """
+    Print hline in (x, y) position.
+
+    :return: returns None
+    """
+    @classmethod
+    def hline(self, x0, y0):
+        if self._current_window != None:
+            self._current_window.move(y0, x0)
+            self._current_window.hline()
+        return None
+
+    """
+    Print hline in (x, y) position.
+
+    :return: returns None
+    """
+    @classmethod
+    def vline(self, x0, y0):
+        if self._current_window != None:
+            self._current_window.move(y0, x0)
+            self._current_window.vline()
         return None
 
     """
@@ -571,6 +606,29 @@ class CursesManager(object):
         win3.bkgd(curses.color_pair(5))
         win3.border()
         return win0, win1, win2, win3
+
+    """
+    Print a question and return answer.
+
+    :return: returns string
+    """
+    @classmethod
+    def print_question(self, question, feedback = True, x0_question = -1, y0_question = -1, x0_answer = -1, y0_answer = -1):
+        answer = ""
+        if len(question) <= 0:
+            return answer
+        if self._current_window != None:
+            if not (x0_question == -1 and y0_question == -1):
+                self.set_cursor(x0_question, y0_question)
+            self.print_message(question)
+            if feedback == False:
+                curses.noecho()
+            else:
+                curses.echo()
+            if not (x0_answer == -1 and y0_answer == -1):
+                self.set_cursor(x0_answer, y0_answer)
+            answer = self.getstr()
+        return answer
 
     """
     Template.

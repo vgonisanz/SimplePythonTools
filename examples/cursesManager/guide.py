@@ -285,10 +285,13 @@ def step10(stdscr):
     return None
 
 def step11(stdscr):
+    question = "What is your name?"
+
     cm = CursesManager()
     cm.set_current_window(stdscr)
     cm.clear()
-
+    answer = cm.print_question(question, True, 1, 1, 1, 2)
+    cm.print_message(" Your answer was: " + answer)
     cm.waitforkey()
     cm.cleanup()
     return None
