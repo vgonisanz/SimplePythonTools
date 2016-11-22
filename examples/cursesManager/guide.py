@@ -358,6 +358,18 @@ def step13(stdscr):
     cm.cleanup()
     return None
 
+def step14(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+    title = "This is a matrix of characters"
+    character_array = ["a", "b", "c", "a", "b", "c", "a", "b", "d"]
+    cm.print_message_at(title, 0, 0)
+    cm.print_character_array(character_array, 3, 0, 1, 1)
+    cm.waitforkey()
+    cm.cleanup()
+    return None
+
 def template(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
@@ -391,7 +403,8 @@ if __name__ == "__main__":
     #wrapper(step10)
     #wrapper(step11)
     #wrapper(step12)
-    wrapper(step13)
+    #wrapper(step13)
+    wrapper(step14)
     print("Thanks for using curses guide")
 
 # TODO Check create pads
