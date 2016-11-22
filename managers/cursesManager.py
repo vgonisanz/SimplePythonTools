@@ -97,7 +97,7 @@ class CursesManager(object):
     @classmethod
     def draw(self):
         print("Drawing...")
-        #self._stdscr.addsrt(0, 0, "Hi!")
+        #self._stdscr.addstr(0, 0, "Hi!")
         #self._stdscr.refresh()
         return None
 
@@ -562,6 +562,44 @@ class CursesManager(object):
                 curses.napms(inter_delay)
             # Restore attributes
             self._current_window.attroff(attributes)
+        return None
+
+    """
+    Print a progress bar in a position (x0, y0) with width
+
+    :param: progress from 0 to 100
+    :return: returns nothing
+    """
+    @classmethod
+    def print_progress_bar(self, progress, x0 = 0, y0 = 0, width = 0, attributes = curses.A_NORMAL):
+        if self._current_window != None:
+            if width == 0:
+                width = curses.LINES - x0
+            if progress < 0:
+                progress = 0
+            if progress > 100:
+                progress = 100
+            no_bar_size = 7
+            bar_width = width - no_bar_size
+            progress_width = int(progress * bar_width / 100)
+            empty_progress_width = bar_width - progress_width
+            # Set attributes
+            self._current_window.attrset(attributes)
+            # Set cursor position
+            self._current_window.move(y0, x0)
+            self._current_window.addch("[")
+            for i in range(0, progress_width):
+                self._current_window.addch("=")
+            #self._current_window.addch(">")
+            for i in range(0, empty_progress_width):
+                self._current_window.addch("*")
+            self._current_window.addch("]")
+            self._current_window.addch(" ")
+            self._current_window.addstr(str(progress))
+            self._current_window.addch("%")
+            # Restore attributes
+            self._current_window.attroff(attributes)
+            self._current_window.refresh()
         return None
 
     """

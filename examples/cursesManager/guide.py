@@ -342,6 +342,22 @@ def step12(stdscr):
     cm.cleanup()
     return None
 
+def step13(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+    title = "This is a progress bar"
+    progress = 0
+    bar_width = 30
+    cm.print_message_at(title, 5, 5)
+    while progress <= 100:
+        cm.print_progress_bar(progress, 5, 6, bar_width)
+        progress = progress + 1
+        cm.rwait(100)
+    cm.waitforkey()
+    cm.cleanup()
+    return None
+
 def template(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
@@ -374,7 +390,8 @@ if __name__ == "__main__":
     #wrapper(step9)
     #wrapper(step10)
     #wrapper(step11)
-    wrapper(step12)
+    #wrapper(step12)
+    wrapper(step13)
     print("Thanks for using curses guide")
 
 # TODO Check create pads
