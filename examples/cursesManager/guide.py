@@ -1,5 +1,7 @@
 import curses
 from curses import wrapper
+from curses.ascii import *
+import locale
 
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..', 'managers'))
@@ -370,6 +372,26 @@ def step14(stdscr):
     cm.cleanup()
     return None
 
+def step15(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+    locale.setlocale(locale.LC_ALL, "")
+    #for i in range(0,50):
+    #    for j in range(1,16):
+    #        s = unichr(10*i+j)
+    #        #stdscr.addstr(s)
+    #        stdscr.addstr(s.encode("utf-8"))
+    #    stdscr.addstr("\n")
+    stdscr.addstr(u"\u27a0".encode("utf-8"))
+    stdscr.getch()
+    #for i in range(1,300):
+    #    cm.print_ch(i)
+    #cm.print_message_at(, 0, 0)
+    cm.waitforkey()
+    cm.cleanup()
+    return None
+
 def template(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
@@ -404,7 +426,8 @@ if __name__ == "__main__":
     #wrapper(step11)
     #wrapper(step12)
     #wrapper(step13)
-    wrapper(step14)
+    #wrapper(step14)
+    wrapper(step15)
     print("Thanks for using curses guide")
 
 # TODO Check create pads
