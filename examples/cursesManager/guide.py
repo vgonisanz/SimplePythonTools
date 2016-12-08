@@ -392,6 +392,30 @@ def step15(stdscr):
     cm.cleanup()
     return None
 
+def step16(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+
+    title = "This is a simple interface"
+    options = []
+    options.append("Push <h> to see help")
+    options.append("Push <q> to quit")
+    options.append("Push <b> to buy")
+
+    y_max, x_max = stdscr.getmaxyx()
+
+    cm.print_message_center(title, 2)
+    for index,option in enumerate(options):
+        col = index + 1
+        cm.print_message_at(option, 0, y_max - col)
+    #cm.print_message_at(option2, 0, y_max - 2)
+    #cm.print_message_at(option3, 0, y_max - 3)
+
+    cm.waitforkey(False)
+    cm.cleanup()
+    return None
+
 def template(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
@@ -427,7 +451,8 @@ if __name__ == "__main__":
     #wrapper(step12)
     #wrapper(step13)
     #wrapper(step14)
-    wrapper(step15)
+    #wrapper(step15)
+    wrapper(step16)
     print("Thanks for using curses guide")
 
 # TODO Check create pads
