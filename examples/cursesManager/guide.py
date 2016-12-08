@@ -376,14 +376,14 @@ def step15(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
     cm.clear()
+    cm.print_message("Printing different ascii characters...\n")
     locale.setlocale(locale.LC_ALL, "")
-    #for i in range(0,50):
-    #    for j in range(1,16):
-    #        s = unichr(10*i+j)
-    #        #stdscr.addstr(s)
-    #        stdscr.addstr(s.encode("utf-8"))
-    #    stdscr.addstr("\n")
-    stdscr.addstr(u"\u27a0".encode("utf-8"))
+    for i in range(0,50):
+        for j in range(1,16):
+            s = unichr(16*i+j)
+            stdscr.addstr(s.encode("utf-8"))
+        stdscr.addstr("\n Index %d: " % i)
+    #stdscr.addstr(u"\u27a0".encode("utf-8"))
     stdscr.getch()
     #for i in range(1,300):
     #    cm.print_ch(i)
