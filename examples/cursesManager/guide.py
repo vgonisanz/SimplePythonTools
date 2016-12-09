@@ -263,7 +263,7 @@ def step9(stdscr):
     cm.clear()
     #option_choose = cm.print_menu(title, options, instructions)
     menu = cm.create_menu(title, options, instructions)
-    option_choose = menu.run_menu()
+    option_choose = menu.run()
     cm.print_message_at("Option chosen: %s" % option_choose, 1, 6)
     cm.waitforkey()
     cm.cleanup()

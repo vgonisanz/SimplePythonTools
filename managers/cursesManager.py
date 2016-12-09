@@ -794,12 +794,16 @@ class CursesManager(object):
         _options_size = 0
         _options = []
         _instructions = None
+        _offset_x = 15
+        _offset_y = 0
+        _title_padding = 1
+        _instruction_padding = 1
 
         """
         Initialize MenuCM
         """
         @classmethod
-        def __init__(self, curses_manager, title, options, instructions = ""):
+        def __init__(self, curses_manager, title, options, instructions = "", offset_x = 15, offset_y = 0, title_padding = 1, instruction_padding = 1):
             if len(options) <= 0:
                 return None
             self._curses_manager = curses_manager
@@ -807,15 +811,19 @@ class CursesManager(object):
             self._option_size = len(options)
             self._options = options
             self._instructions = instructions
+            self._offset_x = offset_x
+            self._offset_y = offset_y
+            self._title_padding = title_padding
+            self._instruction_padding = instruction_padding
             return None
 
         """
-        Print menu like.
+        Print menu and wait response.
 
         :return: returns -1 if quit with q or ESC, option id from [0, N-1] if ENTER
         """
         @classmethod
-        def run_menu(self):
+        def run(self):
             option_selected = 0
             quit_menu = False
             # Refresh menu
@@ -841,20 +849,20 @@ class CursesManager(object):
         :return: returns option selected
         """
         @classmethod
-        def __draw_menu(self, option_selected, offset_x = 15, offset_y = 0, title_padding = 1, instruction_padding = 1):
+        def __draw_menu(self, option_selected):
             if option_selected < 0:
                 option_selected = 0
             if option_selected >= self._option_size:
                 option_selected = self._option_size - 1
             counter = 0
-            self._curses_manager.print_message_at(self._title, offset_x, offset_y, curses.A_UNDERLINE)
+            self._curses_manager.print_message_at(self._title, self._offset_x, self._offset_y, curses.A_UNDERLINE)
             for option in self._options:
                 if option_selected == counter:
-                    self._curses_manager.print_message_at(option, offset_x, counter + offset_y + title_padding + 1, curses.A_REVERSE)
+                    self._curses_manager.print_message_at(option, self._offset_x, counter + self._offset_y + self._title_padding + 1, curses.A_REVERSE)
                 else:
-                    self._curses_manager.print_message_at(option, offset_x, counter + offset_y + title_padding + 1)
+                    self._curses_manager.print_message_at(option, self._offset_x, counter + self._offset_y + self._title_padding + 1)
                 counter = counter + 1
-            self._curses_manager.print_message_at(self._instructions, offset_x, counter + offset_y + title_padding + instruction_padding + 1)
+            self._curses_manager.print_message_at(self._instructions, self._offset_x, counter + self._offset_y + self._title_padding + self._instruction_padding + 1)
             return option_selected
 
     """
