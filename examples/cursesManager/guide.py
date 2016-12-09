@@ -261,7 +261,9 @@ def step9(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
     cm.clear()
-    option_choose = cm.print_menu(title, options, instructions)
+    #option_choose = cm.print_menu(title, options, instructions)
+    menu = cm.create_menu(title, options, instructions)
+    option_choose = menu.run_menu()
     cm.print_message_at("Option chosen: %s" % option_choose, 1, 6)
     cm.waitforkey()
     cm.cleanup()
@@ -400,22 +402,38 @@ def step16(stdscr):
     cm.set_cursor_mode(0)
 
     title = "This is a simple interface"
+    hello_message = "You choose say hello"
+    info_message = "You choose more info"
+    info_message_extended = "Well, you want more info.\n This is a secondary window.\nYou can write here using sec_window object."
     options = []
     options.append("Push <q> to quit")
-    options.append("Push <c> to clear hello")
+    options.append("Push <c> to clear last command")
     options.append("Push <h> to say hello")
+    options.append("Push <i> to print more info")
 
-    delimiter_line = cm.print_simple_ui(options, title)
+    # Initial screen
+    delimiter_line, sec_window = cm.print_simple_ui(options, title)
+    #sec_window.refresh()
+
+    # Interactive screen
     quit_ui = False
     while not quit_ui:
+        # Update and quit if needed
+        delimiter_line, sec_window = cm.print_simple_ui(options, title)
+        sec_window.refresh()
+
         # Check if any option is selected
         event = cm.getch()
         if event == ord('h'):
-            cm.print_message_at("You choose say hello", 1, delimiter_line)
+            cm.print_message_at(hello_message, 1, delimiter_line)
         if event == ord('c'):
             cm.reverseln(delimiter_line, True)
-        # Update and quit if needed
-        cm.print_simple_ui(options, title)
+        if event == ord('i'):
+            cm.print_message_at(info_message, 1, delimiter_line)
+            cm.set_current_window(sec_window)
+            cm.print_message_at(info_message_extended, 1, 5)
+            cm.rwait(1)
+            cm.set_current_window(stdscr)
         if event == ord('q') or event == 28:
             quit_ui = True
 
@@ -495,14 +513,15 @@ if __name__ == "__main__":
     #wrapper(step6)
     #wrapper(step7)
     #wrapper(step8)
-    #wrapper(step9)
+    wrapper(step9)      # Menu
     #wrapper(step10)
     #wrapper(step11)
     #wrapper(step12)
     #wrapper(step13)
     #wrapper(step14)
     #wrapper(step15)
-    wrapper(step16)
+    #wrapper(step16)    # Current
+    #wrapper(step17)
     print("Thanks for using curses guide")
 
 # TODO Check create pads
