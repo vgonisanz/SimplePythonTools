@@ -397,22 +397,72 @@ def step16(stdscr):
     cm.set_current_window(stdscr)
     cm.clear()
 
+    cm.set_cursor_mode(0)
+
     title = "This is a simple interface"
+    options = []
+    options.append("Push <q> to quit")
+    options.append("Push <c> to clear hello")
+    options.append("Push <h> to say hello")
+
+    delimiter_line = cm.print_simple_ui(options, title)
+    quit_ui = False
+    while not quit_ui:
+        # Check if any option is selected
+        event = cm.getch()
+        if event == ord('h'):
+            cm.print_message_at("You choose say hello", 1, delimiter_line)
+        if event == ord('c'):
+            cm.reverseln(delimiter_line, True)
+        # Update and quit if needed
+        cm.print_simple_ui(options, title)
+        if event == ord('q') or event == 28:
+            quit_ui = True
+
+    cm.cleanup()
+    return None
+
+def step17(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+
+    cm.set_cursor_mode(0)
+
+    title = "This is an advanced interface"
     options = []
     options.append("Push <h> to see help")
     options.append("Push <q> to quit")
     options.append("Push <b> to buy")
 
-    y_max, x_max = stdscr.getmaxyx()
-
-    cm.print_message_center(title, 2)
-    for index,option in enumerate(options):
-        col = index + 1
-        cm.print_message_at(option, 0, y_max - col)
-    #cm.print_message_at(option2, 0, y_max - 2)
-    #cm.print_message_at(option3, 0, y_max - 3)
+    delimiter_line = cm.print_simple_ui(options, title)
+    quit_ui = False
+    while not quit_ui:
+        # Check if any option is selected
+        event = cm.getch()
+        if event == ord('b'):
+            cm.print_message_at("You choose buy", 1, delimiter_line)
+        if event == ord('h'):
+            cm.print_message_at("You choose help", 1, delimiter_line)
+        # Update and quit if needed
+        cm.print_simple_ui(options, title)
+        if event == ord('q') or event == 28:
+            quit_ui = True
 
     cm.waitforkey(False)
+    cm.cleanup()
+    return None
+
+# Print constants,
+# Note: These are available only after initscr() has been called.
+def step18(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+
+    # Chr: ACS_BBSS
+    # Colors: COLOR_BLACK
+    cm.waitforkey()
     cm.cleanup()
     return None
 

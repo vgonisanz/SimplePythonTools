@@ -53,7 +53,9 @@ class CursesManager(object):
     @classmethod
     def init(self):
         print("Init basic stuffs")
-        curses.start_color()
+        if curses.has_colors():
+            curses.start_color()
+        curses.keypad(1)    # Allow F1, ...
         return None
 
     """
@@ -214,6 +216,21 @@ class CursesManager(object):
     def set_cursor_mode(self, mode):
         if mode >= 0 and mode < 3:
             curses.curs_set(mode)
+        return None
+
+    """
+    Reverse line y.
+
+    :return: returns None
+    """
+    @classmethod
+    def reverseln(self, y0, clear = False):
+        if self._current_window != None:
+            y_max, x_max = self._current_window.getmaxyx()
+            self._current_window.move(y0, 0)
+            if clear:
+                self._current_window.clrtoeol()
+            self._current_window.chgat(y0, 0, x_max, curses.A_REVERSE)
         return None
 
     """
@@ -660,6 +677,30 @@ class CursesManager(object):
             self.print_border()
             self.waitforkey()
         return None
+
+    """
+    Print simple interface.
+
+    :return: Return option delimiter line
+    """
+    @classmethod
+    def print_simple_ui(self, options, title = "", print_title = True):
+        if len(options) <= 0:
+            return None
+        if self._current_window != None:
+            y_max, x_max = self._current_window.getmaxyx()
+            if print_title:
+                self.print_message_center(title, 0)
+                self.reverseln(0, False)
+            col = 0
+            # Print bottom options
+            for index,option in enumerate(options):
+                col = index + 1
+                self.print_message_at(option, 0, y_max - col)
+            # Reverse separator
+            delimiter_line = y_max - col - 1
+            self.reverseln(delimiter_line)
+        return delimiter_line
 
     """
     Print menu like.
