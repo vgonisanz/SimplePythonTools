@@ -401,7 +401,7 @@ def step16(stdscr):
     title = "This is a simple interface"
     hello_message = "You choose say hello"
     info_message = "You choose more info"
-    info_message_extended = "Well, you want more info.\n This is a secondary window.\nYou can write here using sec_window object."
+    info_message_extended = " Well, you want more info.\n  This is a secondary window.\n  You can write here using sec_window object."
     options = []
     options.append("Push <q> to quit")
     options.append("Push <c> to clear last command")
@@ -430,8 +430,10 @@ def step16(stdscr):
             cm.reverseln(delimiter_line, True)
         if event == ord('i'):
             cm.print_message_at(info_message, 1, delimiter_line)
+            # Extend info in second window
             cm.set_current_window(sec_win)
             cm.print_message_at(info_message_extended, 1, 5)
+            cm.print_border()
             cm.rwait(1)
             cm.set_current_window(stdscr)
 
