@@ -259,10 +259,7 @@ def step9(stdscr):
     instructions = "Use arrow keys to move, ENTER to select, q or ESC to abort."
 
     cm = CursesManager()
-    cm.set_current_window(stdscr)
-    cm.clear()
-    #option_choose = cm.print_menu(title, options, instructions)
-    menu = cm.create_menu(title, options, instructions)
+    menu = cm.create_menu(stdscr, title, options, instructions)
     option_choose = menu.run()
     cm.print_message_at("Option chosen: %s" % option_choose, 1, 6)
     cm.waitforkey()
@@ -281,7 +278,7 @@ def step10(stdscr):
     win3.refresh()
     cm.set_current_window(win0)
     cm.waitforkey(0, 5)
-    y_max, x_max = win3.getmaxyx()
+    y_ma#x, x_max = win3.getmaxyx()
     win3.addch(y_max - 2, x_max - 2, "f")
     win3.refresh()
     cm.waitforkey(0, 5)
@@ -412,15 +409,18 @@ def step16(stdscr):
     options.append("Push <i> to print more info")
 
     # Initial screen
-    delimiter_line, sec_window = cm.print_simple_ui(options, title)
-    #sec_window.refresh()
+    simple_ui = cm.create_simple_ui(stdscr, options, title)
+    simple_ui.draw()
+
+    # Change to print / clear functions
+    delimiter_line = simple_ui.get_delimiter_line()
+    sec_win = simple_ui.get_secondary_window()
 
     # Interactive screen
     quit_ui = False
     while not quit_ui:
         # Update and quit if needed
-        delimiter_line, sec_window = cm.print_simple_ui(options, title)
-        sec_window.refresh()
+        simple_ui.draw()
 
         # Check if any option is selected
         event = cm.getch()
@@ -430,10 +430,11 @@ def step16(stdscr):
             cm.reverseln(delimiter_line, True)
         if event == ord('i'):
             cm.print_message_at(info_message, 1, delimiter_line)
-            cm.set_current_window(sec_window)
+            cm.set_current_window(sec_win)
             cm.print_message_at(info_message_extended, 1, 5)
             cm.rwait(1)
             cm.set_current_window(stdscr)
+
         if event == ord('q') or event == 28:
             quit_ui = True
 
@@ -444,7 +445,6 @@ def step17(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
     cm.clear()
-
     cm.set_cursor_mode(0)
 
     title = "This is an advanced interface"
@@ -453,13 +453,31 @@ def step17(stdscr):
     options.append("Push <q> to quit")
     options.append("Push <b> to buy")
 
-    delimiter_line = cm.print_simple_ui(options, title)
+    buy_title = "Choose a weapon"
+    buy_main = ["pistols", "shotguns", "SMG", "Rifles", "MachineGuns", "Primary ammo", "Secondary ammo", "Equipment"]
+    buy1_1 = ["Glock18", "USP45", "P228", "DesertEagle", "FiveSeven"]
+    buy2_1 = ["M3", "XM1014"]
+    buy3_1 = ["MAC10", "MP5", "UMP45", "P90"]
+    buy4_1 = ["Galil", "AK47", "Scout", "SG552", "AWP", "G3SG1"]
+    buy5_1 = ["M249"]
+    buy8_1 = ["Armor", "Armor|Helmet", "Flash", "Grenade", "Smoke", "Defuser", "NightVision", "Shield"]
+    buy_instructions = "Use arrow keys to move, ENTER to select, q or ESC to abort."
+
+    # Create from simple menu? Json auto menu?
+    # final call or selected value? array of values? <-- Good idea!
+    #
+    delimiter_line, sec_window = cm.print_simple_ui(options, title)
     quit_ui = False
     while not quit_ui:
         # Check if any option is selected
         event = cm.getch()
         if event == ord('b'):
             cm.print_message_at("You choose buy", 1, delimiter_line)
+            # sec_window must be created with object, as ui interface
+            #menu = cm.create_menu(sec_window, buy_title, buy_main, buy_instructions)
+            #option_choose = menu.run()
+            #cm.print_message_at("Option chosen: %s" % option_choose, 1, 6)
+            # Restore main window?
         if event == ord('h'):
             cm.print_message_at("You choose help", 1, delimiter_line)
         # Update and quit if needed
@@ -467,7 +485,6 @@ def step17(stdscr):
         if event == ord('q') or event == 28:
             quit_ui = True
 
-    cm.waitforkey(False)
     cm.cleanup()
     return None
 
@@ -513,15 +530,16 @@ if __name__ == "__main__":
     #wrapper(step6)
     #wrapper(step7)
     #wrapper(step8)
-    wrapper(step9)      # Menu
+    #wrapper(step9)      # Menu
     #wrapper(step10)
     #wrapper(step11)
     #wrapper(step12)
     #wrapper(step13)
     #wrapper(step14)
     #wrapper(step15)
-    #wrapper(step16)    # Current
-    #wrapper(step17)
+    wrapper(step16)    # Simple interface, review
+    #wrapper(step17)     # Advanced menu
+    #wrapper(step18)
     print("Thanks for using curses guide")
 
 # TODO Check create pads
