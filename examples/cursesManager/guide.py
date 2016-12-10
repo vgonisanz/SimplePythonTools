@@ -425,11 +425,14 @@ def step16(stdscr):
         # Check if any option is selected
         event = cm.getch()
         if event == ord('h'):
-            cm.print_message_at(hello_message, 1, delimiter_line)
+            simple_ui.print_command(hello_message)
         if event == ord('c'):
-            cm.reverseln(delimiter_line, True)
+            simple_ui.print_command("")
+            sec_win.clear()
+            sec_win.refresh()
+            sec_win.border()
         if event == ord('i'):
-            cm.print_message_at(info_message, 1, delimiter_line)
+            simple_ui.print_command(info_message)
             # Extend info in second window
             cm.set_current_window(sec_win)
             cm.print_message_at(info_message_extended, 1, 5)
@@ -447,46 +450,8 @@ def step17(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
     cm.clear()
-    cm.set_cursor_mode(0)
 
-    title = "This is an advanced interface"
-    options = []
-    options.append("Push <h> to see help")
-    options.append("Push <q> to quit")
-    options.append("Push <b> to buy")
-
-    buy_title = "Choose a weapon"
-    buy_main = ["pistols", "shotguns", "SMG", "Rifles", "MachineGuns", "Primary ammo", "Secondary ammo", "Equipment"]
-    buy1_1 = ["Glock18", "USP45", "P228", "DesertEagle", "FiveSeven"]
-    buy2_1 = ["M3", "XM1014"]
-    buy3_1 = ["MAC10", "MP5", "UMP45", "P90"]
-    buy4_1 = ["Galil", "AK47", "Scout", "SG552", "AWP", "G3SG1"]
-    buy5_1 = ["M249"]
-    buy8_1 = ["Armor", "Armor|Helmet", "Flash", "Grenade", "Smoke", "Defuser", "NightVision", "Shield"]
-    buy_instructions = "Use arrow keys to move, ENTER to select, q or ESC to abort."
-
-    # Create from simple menu? Json auto menu?
-    # final call or selected value? array of values? <-- Good idea!
-    #
-    delimiter_line, sec_window = cm.print_simple_ui(options, title)
-    quit_ui = False
-    while not quit_ui:
-        # Check if any option is selected
-        event = cm.getch()
-        if event == ord('b'):
-            cm.print_message_at("You choose buy", 1, delimiter_line)
-            # sec_window must be created with object, as ui interface
-            #menu = cm.create_menu(sec_window, buy_title, buy_main, buy_instructions)
-            #option_choose = menu.run()
-            #cm.print_message_at("Option chosen: %s" % option_choose, 1, 6)
-            # Restore main window?
-        if event == ord('h'):
-            cm.print_message_at("You choose help", 1, delimiter_line)
-        # Update and quit if needed
-        cm.print_simple_ui(options, title)
-        if event == ord('q') or event == 28:
-            quit_ui = True
-
+    cm.waitforkey()
     cm.cleanup()
     return None
 
@@ -540,7 +505,7 @@ if __name__ == "__main__":
     #wrapper(step14)
     #wrapper(step15)
     wrapper(step16)    # Simple interface, review
-    #wrapper(step17)     # Advanced menu
+    #wrapper(step17)     # xxx
     #wrapper(step18)
     print("Thanks for using curses guide")
 

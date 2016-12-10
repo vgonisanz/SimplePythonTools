@@ -134,6 +134,7 @@ class CursesManager(object):
     def clear(self):
         if self._current_window != None:
             self._current_window.clear()
+            self._current_window.refresh()
         return None
 
     """
@@ -808,9 +809,11 @@ class CursesManager(object):
             self.__draw_menu(option_selected)
             while not quit_menu:
                 event = self._cm.getch()
-                if event == curses.KEY_UP:
+                if event == ord('t'):
+                    option_selected = option_selected + 1
+                if event == curses.KEY_UP or event == 65:
                     option_selected = option_selected - 1
-                if event == curses.KEY_DOWN:
+                if event == curses.KEY_DOWN or event == 66:
                     option_selected = option_selected + 1
                 if event == curses.KEY_ENTER or event == 10 or event == 13:
                     quit_menu = True
@@ -820,6 +823,17 @@ class CursesManager(object):
                     quit_menu = True
                     option_selected = -1
             return option_selected
+
+        """
+        Clear menu window.
+
+        :return: None
+        """
+        @classmethod
+        def clear(self):
+            self._cm.set_current_window(self._window)
+            self._cm.clear()
+            return None
 
         """
         Draw menu options. Private, autoinvoked.
@@ -894,12 +908,13 @@ class CursesManager(object):
             return None
 
         """
-        Print UI and wait response.
+        Print UI and wait response. Change current window.
 
         :return: returns -1 if quit with q or ESC, option id from [0, N-1] if ENTER
         """
         @classmethod
         def draw(self):
+            self._cm.set_current_window(self._window)
             # Get terminal size
             y_max, x_max = self._window.getmaxyx()
             # Print bottom options
@@ -911,9 +926,44 @@ class CursesManager(object):
             self._cm.reverseln(self._delimiter_line)
             return None
 
+        """
+        Clear secondary window. Modify current window!
+
+        :return: None
+        """
+        @classmethod
+        def clear_secondary_window(self):
+            self._cm.set_current_window(self._secondary_window)
+            self._cm.clear()
+
+        """
+        Print command in reverse line
+
+        :return: None
+        """
+        @classmethod
+        def print_command(self, message, x0 = 1):
+            self._cm.set_current_window(self._window)
+            self._cm.reverseln(self._delimiter_line, True)
+            self._cm.print_message_at(message, x0, self._delimiter_line, curses.A_REVERSE)
+            self._cm.rwait(1)
+            return None
+
+        """
+        Getter to manage manually secondary window
+
+        :return: Secondary window
+        """
+        @classmethod
         def get_secondary_window(self):
             return self._secondary_window
 
+        """
+        Getter to have delimiter data
+
+        :return: Secondary window
+        """
+        @classmethod
         def get_delimiter_line(self):
             return self._delimiter_line
 
