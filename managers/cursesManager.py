@@ -7,7 +7,6 @@ This python 3 class will manager a curses windows for you.
 To generate HTML documentation for this module issue the command:
 
     pydoc -w cursesManager
-
 """
 
 class CursesManager(object):

@@ -1,6 +1,5 @@
 import curses
 from curses import wrapper
-from curses.ascii import *
 import locale
 
 import sys, os
@@ -276,7 +275,7 @@ def step10(stdscr):
     win3.refresh()
     cm.set_current_window(win0)
     cm.waitforkey(0, 5)
-    y_ma0x, x_max = win3.getmaxyx()
+    y_max, x_max = win3.getmaxyx()
     win3.addch(y_max - 2, x_max - 2, "f")
     win3.refresh()
     cm.waitforkey(0, 5)
@@ -301,7 +300,7 @@ def step12(stdscr):
     ch = "a"
     message = "Lets try use cursor"
     message_cursor = "Cursor at x=%d and y=%d"
-    message_max = "win is width = %s and height = %s"
+    #message_max = "win is width = %s and height = %s"
 
     cm = CursesManager()
     cm.set_current_window(stdscr)
@@ -410,8 +409,7 @@ def step16(stdscr):
     simple_ui = cm.create_simple_ui(stdscr, options, title)
     simple_ui.draw()
 
-    # Change to print / clear functions
-    delimiter_line = simple_ui.get_delimiter_line()
+    # Get secondary window
     sec_win = simple_ui.get_secondary_window()
 
     # Interactive screen
