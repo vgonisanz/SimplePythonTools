@@ -1,10 +1,5 @@
-#from __future__ import unicode_literals # Unicode python2.7 test
 import curses
-from curses import wrapper
-
 import locale
-import types
-
 
 """
 This python 3 class will manager a curses windows for you.
@@ -26,7 +21,7 @@ class CursesManager(object):
         print("Initializing curses Manager")
         # Set UTF-8
         locale.setlocale(locale.LC_ALL, '')
-        code = locale.getpreferredencoding()
+        #code = locale.getpreferredencoding()
         return
 
     """

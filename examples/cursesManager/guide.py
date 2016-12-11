@@ -32,7 +32,6 @@ def step2(stdscr):
     message3 = "You can manually put the cursor in position 10, 11 and print a message"
     message4 = "You can insert this message"
     message5 = "And you can delete it!"
-    message6 = "And delete each ch of this message"
     message7 = "You can fill all lines with a for bucle, this is the number: %d"
     message8 = "You can fill all spaces in a line with a for bucle"
     x = 5
@@ -90,7 +89,6 @@ def step3(stdscr):
     reverse = " Reverse\n"
     standard = " Standard\n"
     underline = " Underline\n"
-    mix = " mix mix mix "
 
     cm = CursesManager()
     cm.set_current_window(stdscr)
@@ -278,7 +276,7 @@ def step10(stdscr):
     win3.refresh()
     cm.set_current_window(win0)
     cm.waitforkey(0, 5)
-    y_ma#x, x_max = win3.getmaxyx()
+    y_ma0x, x_max = win3.getmaxyx()
     win3.addch(y_max - 2, x_max - 2, "f")
     win3.refresh()
     cm.waitforkey(0, 5)
