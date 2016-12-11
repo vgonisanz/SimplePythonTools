@@ -3,21 +3,41 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '../..', 'managers'))
 from curses import wrapper
 from cursesManager import CursesManager
 
-def launch_pistols_menu(data):
+def launch_submenu(data):
+    message = "Canceled purchase"
     menu = cm.create_menu(secondary_window, data['title'], data['names'], "")
     option_choose = menu.run()
+    # If user cancel, default message
+    if option_choose >= 0:
+        message = "Launching submenu: " + data['names'][option_choose]
+        simple_ui.print_command(message)
+    if option_choose == 0:
+        launch_printing_submenu(submenu_1_list)
+    if option_choose == 1:
+        launch_printing_submenu(submenu_2_list)
+    if option_choose == 2:
+        launch_printing_submenu(submenu_3_list)
+    if option_choose == 3:
+        launch_printing_submenu(submenu_4_list)
+    if option_choose == 4:
+        launch_printing_submenu(submenu_5_list)
+    if option_choose == 5:
+        message = "You paid 200$ for some " + data['names'][option_choose]
+        simple_ui.print_command(message)
+    if option_choose == 6:
+        message = "You paid 75$ for some " + data['names'][option_choose]
+        simple_ui.print_command(message)
+    if option_choose == 7:
+        launch_printing_submenu(submenu_8_list)
+    return None
+
+def launch_printing_submenu(data):
     message = "Canceled purchase"
+    menu = cm.create_menu(secondary_window, data['title'], data['names'], "")
+    option_choose = menu.run()
     if option_choose >= 0:
         message = "You paid " + data['prices'][option_choose] + " for a " + data['names'][option_choose]
     simple_ui.print_command(message)
-    return None
-
-def launch_main_menu(data):
-    menu = cm.create_menu(secondary_window, data['title'], data['names'], "")
-    option_choose = menu.run()
-    if option_choose == 0:
-        launch_pistols_menu(submenu_1_list)
-    return None
 
 def launch_ui(stdscr):
     global simple_ui
@@ -41,7 +61,7 @@ def launch_ui(stdscr):
             simple_ui.print_command(help_message)
         if event == ord('b'):
             simple_ui.print_command(instructions_message)
-            launch_main_menu(main_menu_list)
+            launch_submenu(main_menu_list)
         if event == ord('q') or event == 28:
             quit_ui = True
     return None
