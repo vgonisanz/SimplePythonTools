@@ -1,7 +1,7 @@
-from curses import wrapper
-
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..', 'managers'))
+
+from curses import wrapper
 from cursesManager import CursesManager
 
 def test1(stdscr):

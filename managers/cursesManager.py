@@ -41,7 +41,7 @@ class CursesManager(object):
         return None
 
     """
-    Print info.
+    Initialize basic stuffs.
 
     :return: returns nothing
     """
@@ -170,12 +170,12 @@ class CursesManager(object):
     :return: returns None
     """
     @classmethod
-    def waitforkey(self, text = True, x0 = -1, y0 = -1):
+    def waitforkey(self, print_text = True, x0 = -1, y0 = -1):
         if self._current_window != None:
             self.rwait(1)
             if x0 > -1 and y0 > -1:
                 self.set_cursor(x0, y0)
-            if text:
+            if print_text:
                 self.print_message("\n Press any key to continue.")
             return self._current_window.getkey()
         return None

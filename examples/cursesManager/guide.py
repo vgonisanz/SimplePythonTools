@@ -6,28 +6,36 @@ import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..', 'managers'))
 from cursesManager import CursesManager
 
+"""
+Print userful info about your terminal
+"""
 def diagnose(stdscr):
-    # Check terminal properties
-    CursesManager.diagnose()
+    CursesManager.diagnose()    # Check terminal properties
     return None
 
-# Create slow text
+"""
+Create slow text
+"""
 def step1(stdscr):
-    message = "Welcome to this guide. Press any key"
+    message1 = "Welcome to this guide."
+    message2 = "You can write slow text with print_message_slow_at"
 
     cm = CursesManager()
     cm.set_current_window(stdscr)
     cm.clear()
-    cm.print_message_slow_at(message)
+    cm.print_message_slow_at(message1, 1, 1)
+    cm.print_message_slow_at(message2, 1, 2)
     cm.waitforkey()
     cm.cleanup()
     return None
 
-# Create text at position
+"""
+Create text at position
+"""
 def step2(stdscr):
     title = "This is a title"
-    message = "This is a fast message in x = 5 and y = 5"
-    message2 = "\nThis is a fast message with CRLF at the beggining"
+    message = "This is a message in x = 5 and y = 5"
+    message2 = "\nThis is a message with CRLF at the beggining"
     message3 = "You can manually put the cursor in position 10, 11 and print a message"
     message4 = "You can insert this message"
     message5 = "And you can delete it!"
@@ -45,18 +53,22 @@ def step2(stdscr):
     cm.set_cursor(10, 11)
     cm.print_message(message3)
     cm.waitforkey()
+    cm.clear()
     cm.insertln(10)
     cm.print_message(message4)
     cm.waitforkey()
+    cm.clear()
     cm.insertln(10)
     cm.print_message(message5)
     cm.insertln(11)
     cm.waitforkey()
+    cm.clear()
     # Manually use curses:
     y_max, x_max = stdscr.getmaxyx()
     for i in range(0, y_max - 1):
         cm.print_message_at(message7 % i, 1, i)
     cm.waitforkey()
+    cm.clear()
     cm.clearln(0)
     cm.clearln(1)
     cm.clearln(2)
@@ -76,7 +88,9 @@ def step2(stdscr):
     cm.cleanup()
     return None
 
-# Use attributes
+"""
+Attributes usage
+"""
 def step3(stdscr):
     message = "Lets play with attributes:\n"
     options = "You can combine: A_ALTCHARSET, A_BLINK, A_BOLD, A_DIM, A_NORMAL, A_REVERSE, A_STANDOUT , A_UNDERLINE\n"
@@ -114,7 +128,9 @@ def step3(stdscr):
     cm.cleanup()
     return None
 
-# Getch bucle
+"""
+Basic bucle with getch
+"""
 def step4(stdscr):
     message = "Example iterator:\n Push any arrow to print a message, quit with 'q'\n"
 
@@ -485,11 +501,11 @@ def tryit():
 
 if __name__ == "__main__":
     #wrapper(diagnose)
-    #wrapper(step1)
-    #wrapper(step2)
-    #wrapper(step3)
-    #wrapper(step4)
-    #wrapper(step5)
+    #wrapper(step1)         # Print slow text
+    #wrapper(step2)         # Print messages
+    #wrapper(step3)         # Attributes usage
+    #wrapper(step4)          # Basic bucle with getch
+    wrapper(step5)
     #wrapper(step6)
     #wrapper(step7)
     #wrapper(step8)
@@ -500,7 +516,7 @@ if __name__ == "__main__":
     #wrapper(step13)
     #wrapper(step14)
     #wrapper(step15)
-    wrapper(step16)    # Simple interface, review
+    #wrapper(step16)    # Simple interface, review
     #wrapper(step17)     # xxx
     #wrapper(step18)
     print("Thanks for using curses guide")
