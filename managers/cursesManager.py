@@ -1,9 +1,5 @@
-#from __future__ import unicode_literals # Unicode python2.7 test
 import curses
-from curses import wrapper
-
 import locale
-import types
 
 """
 This python 3 class will manager a curses windows for you.
@@ -11,7 +7,6 @@ This python 3 class will manager a curses windows for you.
 To generate HTML documentation for this module issue the command:
 
     pydoc -w cursesManager
-
 """
 
 class CursesManager(object):
@@ -25,7 +20,7 @@ class CursesManager(object):
         print("Initializing curses Manager")
         # Set UTF-8
         locale.setlocale(locale.LC_ALL, '')
-        code = locale.getpreferredencoding()
+        #code = locale.getpreferredencoding()
         return
 
     """
@@ -53,7 +48,9 @@ class CursesManager(object):
     @classmethod
     def init(self):
         print("Init basic stuffs")
-        curses.start_color()
+        if curses.has_colors():
+            curses.start_color()
+        curses.keypad(1)    # Allow F1, ...
         return None
 
     """
@@ -97,7 +94,7 @@ class CursesManager(object):
     @classmethod
     def draw(self):
         print("Drawing...")
-        #self._stdscr.addsrt(0, 0, "Hi!")
+        #self._stdscr.addstr(0, 0, "Hi!")
         #self._stdscr.refresh()
         return None
 
@@ -131,6 +128,7 @@ class CursesManager(object):
     def clear(self):
         if self._current_window != None:
             self._current_window.clear()
+            self._current_window.refresh()
         return None
 
     """
@@ -172,12 +170,13 @@ class CursesManager(object):
     :return: returns None
     """
     @classmethod
-    def waitforkey(self, x0 = -1, y0 = -1):
+    def waitforkey(self, text = True, x0 = -1, y0 = -1):
         if self._current_window != None:
             self.rwait(1)
             if x0 > -1 and y0 > -1:
                 self.set_cursor(x0, y0)
-            self.print_message("\n Press any key to continue.")
+            if text:
+                self.print_message("\n Press any key to continue.")
             return self._current_window.getkey()
         return None
 
@@ -206,6 +205,9 @@ class CursesManager(object):
 
     """
     Set cursor mode.
+    0 = Invisible
+    1 = Visible
+    2 = Very visible
 
     :return: returns None
     """
@@ -213,6 +215,21 @@ class CursesManager(object):
     def set_cursor_mode(self, mode):
         if mode >= 0 and mode < 3:
             curses.curs_set(mode)
+        return None
+
+    """
+    Reverse line y.
+
+    :return: returns None
+    """
+    @classmethod
+    def reverseln(self, y0, clear = False):
+        if self._current_window != None:
+            y_max, x_max = self._current_window.getmaxyx()
+            self._current_window.move(y0, 0)
+            if clear:
+                self._current_window.clrtoeol()
+            self._current_window.chgat(y0, 0, x_max, curses.A_REVERSE)
         return None
 
     """
@@ -565,6 +582,71 @@ class CursesManager(object):
         return None
 
     """
+    Print a progress bar in a position (x0, y0) with width
+
+    :param: progress from 0 to 100
+    :return: returns nothing
+    """
+    @classmethod
+    def print_progress_bar(self, progress, x0 = 0, y0 = 0, width = 0, attributes = curses.A_NORMAL):
+        if self._current_window != None:
+            if width == 0:
+                width = curses.LINES - x0
+            if progress < 0:
+                progress = 0
+            if progress > 100:
+                progress = 100
+            no_bar_size = 7
+            bar_width = width - no_bar_size
+            progress_width = int(progress * bar_width / 100)
+            empty_progress_width = bar_width - progress_width
+            # Set attributes
+            self._current_window.attrset(attributes)
+            # Set cursor position
+            self._current_window.move(y0, x0)
+            self._current_window.addch("[")
+            for i in range(0, progress_width):
+                self._current_window.addch("=")
+            #self._current_window.addch(">")
+            for i in range(0, empty_progress_width):
+                self._current_window.addch("*")
+            self._current_window.addch("]")
+            self._current_window.addch(" ")
+            self._current_window.addstr(str(progress))
+            self._current_window.addch("%")
+            # Restore attributes
+            self._current_window.attroff(attributes)
+            self._current_window.refresh()
+        return None
+
+    """
+    Print an array of characters as a matrix with row size in a position (x0, y0) with a offset between values
+
+    :return: returns nothing
+    """
+    @classmethod
+    def print_character_array(self, character_array, row_size, x0 = 0, y0 = 0, offset = 0, attributes = curses.A_NORMAL):
+        if self._current_window != None:
+            cols = int(len(character_array) / row_size)
+            current_col = 0
+            # Set attributes
+            self._current_window.attrset(attributes)
+            # Set cursor position
+            self._current_window.move(y0, x0)
+            for i in range(0, cols):
+                for j in range(0, row_size):
+                    value = i * row_size + j
+                    self._current_window.addch(character_array[value])
+                    for k in range(0, offset):
+                        self._current_window.addch(" ")
+                current_col = current_col + 1
+                self._current_window.move(y0 + current_col, x0)
+            # Restore attributes
+            self._current_window.attroff(attributes)
+            self._current_window.refresh()
+        return None
+
+    """
     Print book like.
 
     :return: returns nothing
@@ -594,56 +676,6 @@ class CursesManager(object):
             self.print_border()
             self.waitforkey()
         return None
-
-    """
-    Print menu like.
-
-    :return: returns -1 if quit with q or ESC, option id from [0, N-1] if ENTER
-    """
-    @classmethod
-    def print_menu(self, title, options, instructions = ""):
-        if len(options) <= 0:
-            return None
-        option_selected = 0
-        quit_menu = False
-        if self._current_window != None:
-            self.__draw_menu(title, options, option_selected, instructions)
-            while not quit_menu:
-                event = self.getch()
-                if event == curses.KEY_UP:
-                    option_selected = option_selected - 1
-                if event == curses.KEY_DOWN:
-                    option_selected = option_selected + 1
-                if event == curses.KEY_ENTER or event == 10 or event == 13:
-                    quit_menu = True
-                option_selected = self.__draw_menu(title, options, option_selected, instructions)
-                if event == ord('q') or event == 28:
-                    quit_menu = True
-                    option_selected = -1
-        return option_selected
-
-    """
-    Draw menu options.
-
-    :return: returns option selected
-    """
-    @classmethod
-    def __draw_menu(self, title, options, option_selected, instructions, offset_x = 15, offset_y = 0, title_padding = 1, instruction_padding = 1):
-        max_options = len(options)
-        if option_selected < 0:
-            option_selected = 0
-        if option_selected >= max_options:
-            option_selected = max_options - 1
-        counter = 0
-        self.print_message_at(title, offset_x, offset_y, curses.A_UNDERLINE)
-        for option in options:
-            if option_selected == counter:
-                self.print_message_at(option, offset_x, counter + offset_y + title_padding + 1, curses.A_REVERSE)
-            else:
-                self.print_message_at(option, offset_x, counter + offset_y + title_padding + 1)
-            counter = counter + 1
-        self.print_message_at(instructions, offset_x, counter + offset_y + title_padding + instruction_padding + 1)
-        return option_selected
 
     """
     print 4 windows in a box.
@@ -702,7 +734,235 @@ class CursesManager(object):
         return answer
 
     """
-    Template.
+    Create a simple interface.
+
+    :return: Return option delimiter line
+    """
+    @classmethod
+    def create_simple_ui(self, window, options, title = "", print_title = True):
+        simpleui = self.SimpleUserInterfaceCM(self, window, options, title, print_title)
+        return simpleui
+
+    """
+    Create menu.
+
+    :return: returns menu object
+    """
+    @classmethod
+    def create_menu(self, window, title, options, instructions):
+        menu = self.MenuCM(self, window, title, options, instructions)
+        return menu
+
+    """
+    Nested class to manager a menu for you.
+
+    """
+    class MenuCM(object):
+        _window = None
+        _cm = None
+        _title = None
+        _options_size = 0
+        _options = []
+        _instructions = None
+        _offset_x = 15
+        _offset_y = 0
+        _title_padding = 1
+        _instruction_padding = 1
+
+        """
+        Initialize MenuCM
+        """
+        @classmethod
+        def __init__(self, curses_manager, window, title, options, instructions = "", offset_x = 15, offset_y = 0, title_padding = 1, instruction_padding = 1):
+            if len(options) <= 0:
+                return None
+            self._window = window
+            self._cm = curses_manager
+            self._title = title
+            self._option_size = len(options)
+            self._options = options
+            self._instructions = instructions
+            self._offset_x = offset_x
+            self._offset_y = offset_y
+            self._title_padding = title_padding
+            self._instruction_padding = instruction_padding
+            return None
+
+        """
+        Print menu and wait response.
+
+        :return: returns -1 if quit with q or ESC, option id from [0, N-1] if ENTER
+        """
+        @classmethod
+        def run(self):
+            self._cm.set_current_window(self._window)
+            self._cm.clear()
+            option_selected = 0
+            quit_menu = False
+            # Refresh menu
+            self.__draw_menu(option_selected)
+            while not quit_menu:
+                event = self._cm.getch()
+                if event == ord('t'):
+                    option_selected = option_selected + 1
+                if event == curses.KEY_UP or event == 65:
+                    option_selected = option_selected - 1
+                if event == curses.KEY_DOWN or event == 66:
+                    option_selected = option_selected + 1
+                if event == curses.KEY_ENTER or event == 10 or event == 13:
+                    quit_menu = True
+                # Refresh menu
+                option_selected = self.__draw_menu(option_selected)
+                if event == ord('q') or event == 28:
+                    quit_menu = True
+                    option_selected = -1
+            return option_selected
+
+        """
+        Clear menu window.
+
+        :return: None
+        """
+        @classmethod
+        def clear(self):
+            self._cm.set_current_window(self._window)
+            self._cm.clear()
+            return None
+
+        """
+        Draw menu options. Private, autoinvoked.
+
+        :return: returns option selected
+        """
+        @classmethod
+        def __draw_menu(self, option_selected):
+            if option_selected < 0:
+                option_selected = 0
+            if option_selected >= self._option_size:
+                option_selected = self._option_size - 1
+            counter = 0
+            self._cm.print_message_at(self._title, self._offset_x, self._offset_y, curses.A_UNDERLINE)
+            for option in self._options:
+                if option_selected == counter:
+                    self._cm.print_message_at(option, self._offset_x, counter + self._offset_y + self._title_padding + 1, curses.A_REVERSE)
+                else:
+                    self._cm.print_message_at(option, self._offset_x, counter + self._offset_y + self._title_padding + 1)
+                counter = counter + 1
+            self._cm.print_message_at(self._instructions, self._offset_x, counter + self._offset_y + self._title_padding + self._instruction_padding + 1)
+            return option_selected
+
+    """
+    Nested class to manager a simple UI for you.
+
+    """
+    class SimpleUserInterfaceCM(object):
+        _window = None
+        _cm = None
+        _title = None
+        _options_size = 0
+        _options = []
+        _print_title = False
+        _secondary_window = None
+        _delimiter_line = 0
+
+        """
+        Initialize SimpleUserInterfaceCM
+        """
+        @classmethod
+        def __init__(self, curses_manager, window, options, title, print_title):
+            option_size = len(options)
+            if option_size <= 0:
+                return None
+            if window == None:
+                return None
+            self._window = window
+            self._cm = curses_manager
+            self._title = title
+            self._option_size = option_size
+            self._options = options
+            self._print_title = print_title
+            # Get terminal size
+            y_max, x_max = self._window.getmaxyx()
+            # Print title if needed
+            if print_title:
+                self._cm.print_message_center(title, 0)
+                self._cm.reverseln(0, False)
+            # Create secondary window
+            sec_win_x0 = 0
+            sec_win_y0 = 1
+            sec_win_x = x_max
+            sec_win_y = y_max - option_size - 2
+            if not print_title:
+                sec_win_y0 = 0
+            self._secondary_window = curses.newwin(sec_win_y, sec_win_x, sec_win_y0, sec_win_x0)
+            # Box secondary window
+            self._secondary_window.border()
+            # Calculate delimiter position
+            self._delimiter_line = y_max - option_size - 1
+            return None
+
+        """
+        Print UI and wait response. Change current window.
+
+        :return: returns -1 if quit with q or ESC, option id from [0, N-1] if ENTER
+        """
+        @classmethod
+        def draw(self):
+            self._cm.set_current_window(self._window)
+            # Get terminal size
+            y_max, x_max = self._window.getmaxyx()
+            # Print bottom options
+            col = 0
+            for index,option in enumerate(self._options):
+                col = index + 1
+                self._cm.print_message_at(option, 0, y_max - col)
+            # Reverse separator
+            self._cm.reverseln(self._delimiter_line)
+            return None
+
+        """
+        Clear secondary window. Modify current window!
+
+        :return: None
+        """
+        @classmethod
+        def clear_secondary_window(self):
+            self._cm.set_current_window(self._secondary_window)
+            self._cm.clear()
+
+        """
+        Print command in reverse line
+
+        :return: None
+        """
+        @classmethod
+        def print_command(self, message, x0 = 1):
+            self._cm.set_current_window(self._window)
+            self._cm.reverseln(self._delimiter_line, True)
+            self._cm.print_message_at(message, x0, self._delimiter_line, curses.A_REVERSE)
+            self._cm.rwait(1)
+            return None
+
+        """
+        Getter to manage manually secondary window
+
+        :return: Secondary window
+        """
+        @classmethod
+        def get_secondary_window(self):
+            return self._secondary_window
+
+        """
+        Getter to have delimiter data
+
+        :return: Secondary window
+        """
+        @classmethod
+        def get_delimiter_line(self):
+            return self._delimiter_line
+
+    """
+    Template function.
 
     :return: returns nothing
     """

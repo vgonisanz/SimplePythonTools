@@ -1,5 +1,6 @@
 import curses
 from curses import wrapper
+import locale
 
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..', 'managers'))
@@ -30,7 +31,6 @@ def step2(stdscr):
     message3 = "You can manually put the cursor in position 10, 11 and print a message"
     message4 = "You can insert this message"
     message5 = "And you can delete it!"
-    message6 = "And delete each ch of this message"
     message7 = "You can fill all lines with a for bucle, this is the number: %d"
     message8 = "You can fill all spaces in a line with a for bucle"
     x = 5
@@ -88,7 +88,6 @@ def step3(stdscr):
     reverse = " Reverse\n"
     standard = " Standard\n"
     underline = " Underline\n"
-    mix = " mix mix mix "
 
     cm = CursesManager()
     cm.set_current_window(stdscr)
@@ -257,9 +256,8 @@ def step9(stdscr):
     instructions = "Use arrow keys to move, ENTER to select, q or ESC to abort."
 
     cm = CursesManager()
-    cm.set_current_window(stdscr)
-    cm.clear()
-    option_choose = cm.print_menu(title, options, instructions)
+    menu = cm.create_menu(stdscr, title, options, instructions)
+    option_choose = menu.run()
     cm.print_message_at("Option chosen: %s" % option_choose, 1, 6)
     cm.waitforkey()
     cm.cleanup()
@@ -302,7 +300,7 @@ def step12(stdscr):
     ch = "a"
     message = "Lets try use cursor"
     message_cursor = "Cursor at x=%d and y=%d"
-    message_max = "win is width = %s and height = %s"
+    #message_max = "win is width = %s and height = %s"
 
     cm = CursesManager()
     cm.set_current_window(stdscr)
@@ -342,6 +340,130 @@ def step12(stdscr):
     cm.cleanup()
     return None
 
+def step13(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+    title = "This is a progress bar"
+    progress = 0
+    bar_width = 30
+    cm.print_message_at(title, 5, 5)
+    while progress <= 100:
+        cm.print_progress_bar(progress, 5, 6, bar_width)
+        progress = progress + 1
+        cm.rwait(100)
+    cm.waitforkey()
+    cm.cleanup()
+    return None
+
+def step14(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+    title = "This is a matrix of characters"
+    character_array = ["a", "b", "c", "a", "b", "c", "a", "b", "d"]
+    cm.print_message_at(title, 0, 0)
+    cm.print_character_array(character_array, 3, 0, 1, 1)
+    cm.waitforkey()
+    cm.cleanup()
+    return None
+
+def step15(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+    cm.print_message("Printing different ascii characters...\n")
+    locale.setlocale(locale.LC_ALL, "")
+    for i in range(0,50):
+        for j in range(1,16):
+            s = unichr(16*i+j)
+            stdscr.addstr(s.encode("utf-8"))
+        stdscr.addstr("\n Index %d: " % i)
+    #stdscr.addstr(u"\u27a0".encode("utf-8"))
+    stdscr.getch()
+    #for i in range(1,300):
+    #    cm.print_ch(i)
+    #cm.print_message_at(, 0, 0)
+    cm.waitforkey()
+    cm.cleanup()
+    return None
+
+def step16(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+
+    cm.set_cursor_mode(0)
+
+    title = "This is a simple interface"
+    hello_message = "You choose say hello"
+    info_message = "You choose more info"
+    info_message_extended = " Well, you want more info.\n  This is a secondary window.\n  You can write here using sec_window object."
+    options = []
+    options.append("Push <q> to quit")
+    options.append("Push <c> to clear last command")
+    options.append("Push <h> to say hello")
+    options.append("Push <i> to print more info")
+
+    # Initial screen
+    simple_ui = cm.create_simple_ui(stdscr, options, title)
+    simple_ui.draw()
+
+    # Get secondary window
+    sec_win = simple_ui.get_secondary_window()
+
+    # Interactive screen
+    quit_ui = False
+    while not quit_ui:
+        # Update and quit if needed
+        simple_ui.draw()
+
+        # Check if any option is selected
+        event = cm.getch()
+        if event == ord('h'):
+            simple_ui.print_command(hello_message)
+        if event == ord('c'):
+            simple_ui.print_command("")
+            sec_win.clear()
+            sec_win.refresh()
+            sec_win.border()
+        if event == ord('i'):
+            simple_ui.print_command(info_message)
+            # Extend info in second window
+            cm.set_current_window(sec_win)
+            cm.print_message_at(info_message_extended, 1, 5)
+            cm.print_border()
+            cm.rwait(1)
+            cm.set_current_window(stdscr)
+
+        if event == ord('q') or event == 28:
+            quit_ui = True
+
+    cm.cleanup()
+    return None
+
+def step17(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+
+    cm.waitforkey()
+    cm.cleanup()
+    return None
+
+# Print constants,
+# Note: These are available only after initscr() has been called.
+def step18(stdscr):
+    cm = CursesManager()
+    cm.set_current_window(stdscr)
+    cm.clear()
+
+    # Chr: ACS_BBSS
+    # Colors: COLOR_BLACK
+    cm.waitforkey()
+    cm.cleanup()
+    return None
+
 def template(stdscr):
     cm = CursesManager()
     cm.set_current_window(stdscr)
@@ -371,10 +493,16 @@ if __name__ == "__main__":
     #wrapper(step6)
     #wrapper(step7)
     #wrapper(step8)
-    #wrapper(step9)
+    #wrapper(step9)      # Menu
     #wrapper(step10)
     #wrapper(step11)
-    wrapper(step12)
+    #wrapper(step12)
+    #wrapper(step13)
+    #wrapper(step14)
+    #wrapper(step15)
+    wrapper(step16)    # Simple interface, review
+    #wrapper(step17)     # xxx
+    #wrapper(step18)
     print("Thanks for using curses guide")
 
 # TODO Check create pads
