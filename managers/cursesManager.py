@@ -50,7 +50,7 @@ class CursesManager(object):
         print("Init basic stuffs")
         if curses.has_colors():
             curses.start_color()
-        curses.keypad(1)    # Allow F1, ...
+        #stdscr.keypad(True)  # Allow F1, ...
         return None
 
     """

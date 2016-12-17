@@ -159,6 +159,9 @@ def step4(stdscr):
     cm.cleanup()
     return None
 
+"""
+Color terminal!
+"""
 def step5(stdscr):
     message = " You can change background\n And write with different colors"
     message2 = "\n Change it!"
@@ -168,8 +171,8 @@ def step5(stdscr):
     message6 = "\n And change again!!"
 
     cm = CursesManager()
-    cm.set_current_window(stdscr)
     cm.init()
+    cm.set_current_window(stdscr)
     cm.clear()
     cm.print_background(curses.COLOR_WHITE, curses.COLOR_BLUE)
     cm.print_message(message)
@@ -192,7 +195,9 @@ def step5(stdscr):
     cm.waitforkey()
     return None
 
-# Selective clear
+"""
+Selective clear
+"""
 def step6(stdscr):
     message = "Fill and clear.\n1.- Let's put text in all terminal"
     message2 = "2.- Let's clean from (4, 5) to end of line"
@@ -214,7 +219,9 @@ def step6(stdscr):
     cm.cleanup()
     return None
 
-# Cursor usage
+"""
+Cursor usage
+"""
 def step7(stdscr):
     message = "Cursor off"
     message2 = "Cursor on"
@@ -238,7 +245,9 @@ def step7(stdscr):
     cm.cleanup()
     return None
 
+"""
 # Create a book
+"""
 def step8(stdscr):
     title = "My first book"
     pages = []
@@ -504,11 +513,11 @@ if __name__ == "__main__":
     #wrapper(step1)         # Print slow text
     #wrapper(step2)         # Print messages
     #wrapper(step3)         # Attributes usage
-    #wrapper(step4)          # Basic bucle with getch
-    wrapper(step5)
-    #wrapper(step6)
-    #wrapper(step7)
-    #wrapper(step8)
+    #wrapper(step4)         # Basic bucle with getch
+    #wrapper(step5)         # Color terminal!
+    #wrapper(step6)         # Selective clear
+    #wrapper(step7)         # Cursor types
+    wrapper(step8)          # Move to class!!! TODO
     #wrapper(step9)      # Menu
     #wrapper(step10)
     #wrapper(step11)
