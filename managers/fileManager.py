@@ -30,8 +30,8 @@ class FileManager(object):
         :return: returns nothing
         """
         self._verbose = verbose
-        self._input_path = self.pwd()
-        self._output_path = self.pwd()
+        self._input_path = os.path.join(self.pwd(), "input")
+        self._output_path = os.path.join(self.pwd(), "output")
         return None
 
     """
