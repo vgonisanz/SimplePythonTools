@@ -88,6 +88,8 @@ class FileManager(object):
     """
     @classmethod
     def purge_input_and_output(self):
+        print(self._input_path)
+        print(self._output_path)
         #self.rmdir(self._input_path)
         #self.rmdir(self._output_path)
         return None
