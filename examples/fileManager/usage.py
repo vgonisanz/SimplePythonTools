@@ -5,7 +5,7 @@ from fileManager import FileManager
 
 def generate_input_and_output():
     fm = FileManager(True)
-    fm.create_random_input_and_output()
+    fm.create_random_input_and_output(5)
     return None
 
 def test2():
