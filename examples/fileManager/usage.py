@@ -15,4 +15,4 @@ def test2():
 
 if __name__ == "__main__":
     print("Using file manager")
-    generate_input_and_output(False)
+    generate_input_and_output(True)
