@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 from curses import wrapper
 
 import sys, os
@@ -37,6 +38,8 @@ if __name__ == "__main__":
     #wrapper(current)
     wrapper(test2)
 =======
+=======
+>>>>>>> ae16afd8d8eeeb6cd95f788222aef0b2ee39ac31
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..', 'managers'))
 
